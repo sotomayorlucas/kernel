@@ -1,0 +1,43 @@
+﻿System Programming
+Taller: Introducción, segmentación y pasaje a modo protegido
+
+Primera parte: Definiendo la GDT
+
+1) Modo protegido: modo nativo en el que opera el procesador. Provee un conjunto de caracteristicas, flexibilidad, retrocompatibilidad, y alta perfonmance.
+Modo Real: es el que provee el entorno de programacion en el que trabajaba el 8086.  Trabaja en 16 bits. Todos los ordenandores empiezan en este modo.
+
+2) Desventaja: todo en 16 bits, no tenemos multitasking, direccion de  memoria es hasta 1 MB, y no tiene nivel de privilegio, no nos da seguridad.
+ Ventaja: compatibilidad
+
+3) GDT: es la tabla del segment desciptor, es la tabla donde se describe el segmento global.
+
+Limit: el mayor offset que se le puede sumar al segmento, define el tamaño
+Base: la direccion de memoria donde empieza el segmento
+G: granularity, indica cuando la unidad del offset es de sumar un byte o 4 kb.
+P: indica si el segmento se encuentra en memoria fisica o no, si el flag esta en clear ( no presente ) devuelve un segment not present exception.
+DPL: describe el nivel de privilegio, 4 niveles
+S: indica si se trata de un system segment (indicado con 0) o, data o code segment (indicado con 1).
+
+4)
+                          11  -   10    -   9    -  8
+
+
+
+
+6)
+extern gdt_descriptor_t GDT_DESC;
+estructura que nos indica el tamaño y donde inicia la tabla
+extern gdt_entry_t gdt[]; 
+Nos indica los bits que define al segmento, es la descripcion del segmento dentro de la tabla contiene al limit, s, p, l, etc.
+
+10) LGDT: cara los valores en el operando fuente dentro del gdtr, el registro que nos indica la direccion del gdt. Parametros: dir base, y limite en bytes. Los valores altos son la base y los bajos el limite. 
+
+13) CR0.PE : es el bit que habilita el modo protegido cuando esta en 1. en 0 esta en modo real. Habilita los niveles de proteccion
+de segmento
+CR0: control de flags del sistema, los bits resevados deben ser siempre 0. 
+
+21) la estructura ca tiene dos elementos de un byte cada uno, c y a. c es el caracter y a los atributos
+
+
+
+
