@@ -1,10 +1,3 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
-
-  Macros para asserts. Solo usables desde nivel 0.
-*/
 
 #ifndef __ASSERT_H__
 #define __ASSERT_H__

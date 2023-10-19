@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Declaracion de constantes de con colores para la interfaz en modo texto.
-*/
 
 #ifndef __COLORS_H__
 #define __COLORS_H__

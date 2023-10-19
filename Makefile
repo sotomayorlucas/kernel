@@ -1,7 +1,3 @@
-# ** por compatibilidad se omiten tildes **
-# ==============================================================================
-# TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-# ==============================================================================
 
 MCOPY=mcopy
 

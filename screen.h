@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Declaracion de funciones del scheduler
-*/
 
 #ifndef __SCREEN_H__
 #define __SCREEN_H__

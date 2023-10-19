@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Declaracion de rutinas del controlador de interrupciones
-*/
 
 #ifndef __PIC_H__
 #define __PIC_H__

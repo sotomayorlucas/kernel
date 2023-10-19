@@ -1,10 +1,3 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
-
-  Definiciones globales del sistema.
-*/
 
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
@@ -36,9 +29,6 @@
 #define GDT_OFF_NULL_DESC (GDT_IDX_NULL_DESC << 3)
 #define GDT_OFF_VIDEO  (GDT_IDX_VIDEO << 3)
 
-/* COMPLETAR - Valores para los selectores de segmento de la GDT 
- * Definirlos a partir de los índices de la GDT, definidos más arriba 
- * Hint: usar operadores "<<" y "|" (shift y or) */
 
 #define GDT_CODE_0_SEL (GDT_IDX_CODE_0 << 3) | 0x0
 #define GDT_DATA_0_SEL (GDT_IDX_DATA_0 << 3) | 0x0
@@ -60,16 +50,12 @@
 #define GDT_BASE_MID(base)  (uint8_t)((((uint32_t)(base)) >> 16) & 0xFF)
 #define GDT_BASE_HIGH(base) (uint8_t)((((uint32_t)(base)) >> 24) & 0xFF)
 
-/* COMPLETAR - Valores de atributos */ 
-//Preguntar si hay que shitfear a la posicion que debe estar
 #define DESC_CODE_DATA 1
 #define DESC_SYSTEM    0
 #define DESC_TYPE_EXECUTE_READ 10
 #define DESC_TYPE_READ_WRITE   2
 
-/* COMPLETAR - Tamaños de segmentos */ 
 #define FLAT_SEGM_SIZE 0x0F0000FFFF
-//Preguntar
 //#define VIDEO_SEGM_SIZE  
 
 

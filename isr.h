@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
-; TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Declaracion de las rutinas de atencion de interrupciones
-*/
 
 #ifndef __ISR_H__
 #define __ISR_H__

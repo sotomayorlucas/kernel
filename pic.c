@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Rutinas del controlador de interrupciones.
-*/
 #include "pic.h"
 
 #define PIC1_PORT 0x20
@@ -20,7 +14,6 @@ void pic_finish2(void) {
   outb(0xA0, 0x20);
 }
 
-// COMPLETAR: implementar pic_reset()
 void pic_reset() {
   outb(PIC1_PORT, 0x11);
   outb(PIC1_PORT+1, 32);

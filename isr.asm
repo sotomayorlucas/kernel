@@ -120,7 +120,6 @@ ISRNE 20
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
-; COMPLETAR: Implementar la rutina
 ; usamos iret ya que este mismo guarda el estado de los flags antes de la interrupcion
 ; mientras que ret no lo hace
 _isr32:
@@ -138,7 +137,7 @@ _isr32:
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
 global _isr33
-; COMPLETAR: Implementar la rutina
+
 _isr33:
     pushad
 
@@ -159,7 +158,6 @@ _isr33:
 ;; -------------------------------------------------------------------------- ;;
 
 global _isr88
-; COMPLETAR: Implementar la rutina
 _isr88:
 
     mov eax, 0x58
@@ -167,7 +165,6 @@ _isr88:
     iret
 
 global _isr98
-; COMPLETAR: Implementar la rutina
 _isr98:
 
     mov eax, 0x62

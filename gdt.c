@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Definicion de la tabla de descriptores globales
-*/
 
 #include "gdt.h"
 
@@ -33,13 +27,6 @@ gdt_entry_t gdt[GDT_COUNT] = {
             .g = 0x00,
             .base_31_24 = 0x00,
         },
-
-    /* Completar la GDT: 
-      Es conveniente completar antes las constantes definidas en defines.h y valerse
-      de las mismas para definir los descriptores acá. Traten en lo posible de usar las 
-      macros allí definidas.
-      Tomen el descriptor nulo como ejemplo y definan el resto.
-     */
     [GDT_IDX_CODE_0] = 
      { // SEG CODIGO NIV 0 EJECUCION/LECTURA
             .limit_15_0 = GDT_LIMIT_LOW(GDT_LIMIT_4KIB(817 << 20)),

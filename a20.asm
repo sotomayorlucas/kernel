@@ -1,8 +1,4 @@
-; ** por compatibilidad se omiten tildes **
-; ================================================================================
-; TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-; ================================================================================
-; rutinas para habilitar y deshabilitar A20
+
 
 BITS 16
 

@@ -1,9 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
-  definicion de las rutinas de atencion de interrupciones
-*/
+
 
 #include "idt.h"
 #include "defines.h"
@@ -24,22 +19,8 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
  * solo incluye sus 16bits mas significativos */
 #define HIGH_16_BITS(v) ((uint32_t)(v) >> 16 & 0xFFFF)
 
-/*
-    La siguiente es una macro de EJEMPLO para ayudar a armar entradas de
-    interrupciones. Para usar, completar CORRECTAMENTE los atributos
-    (en defines.h) y el registro de segmento (ver defines.h). Invocarla
-    desde idt_init() de la siguiene manera:
 
-    void idt_init() {
-        IDT_ENTRY0(0);
-        ...
-        IDT_ENTRY0(19);
-        ...
-    }
-*/
 
-/* COMPLETAR: Dado un numero de de interrupcion asigna a `idt` la entrada
- * correspondiente con nivel 0 */
 #define IDT_ENTRY0(numero)                                                     \
   idt[numero] = (idt_entry_t) {                                                \
     .offset_31_16 = HIGH_16_BITS(&_isr##numero),/*indica la dirr de memoria donde comienza la rutina de interr*/ \
@@ -50,8 +31,7 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
     .present = 1           /*indica si esta presente*/                         \
   }
 
-/* COMPLETAR: Dado un numero de de interrupcion asigna a `idt` la entrada
- * correspondiente con nivel 3 */
+
 #define IDT_ENTRY3(numero)                                                     \
   idt[numero] = (idt_entry_t) {                                                \
     .offset_31_16 = HIGH_16_BITS(&_isr##numero),                               \
@@ -86,13 +66,13 @@ void idt_init() {
   IDT_ENTRY0(19);
   IDT_ENTRY0(20);
 
-  // COMPLETAR: Interrupciones de reloj y teclado
+  
   IDT_ENTRY0(32); // CLOCK
   IDT_ENTRY0(33); // TECLADO preguntar
 
-  // COMPLETAR: Syscalls
-   IDT_ENTRY3(88);
-   IDT_ENTRY3(98);
+  
+  IDT_ENTRY3(88);
+  IDT_ENTRY3(98);
    
 }
 

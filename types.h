@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Declaracion de tipos comunes en el kernel.
-*/
 
 #ifndef __TYPES_H__
 #define __TYPES_H__

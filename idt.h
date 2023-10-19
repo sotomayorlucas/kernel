@@ -1,17 +1,10 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
-
-  Declaracion de las rutinas de atencion de interrupciones
-*/
 
 #ifndef __IDT_H__
 #define __IDT_H__
 
 #include "types.h"
 
-// COMPLETAR: Definir INTERRUPT_GATE_TYPE con el valor correspondiente
+
 #define INTERRUPT_GATE_TYPE ???
 
 /* Struct de descriptor de IDT */

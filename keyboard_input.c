@@ -1,10 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
-================================================================================
- TALLER System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
-================================================================================
 
-  Controlador de teclado minimal
-*/
 
 #include "keyboard_input.h"
 #include "screen.h"
