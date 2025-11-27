@@ -5,7 +5,7 @@
 #include "types.h"
 
 
-#define INTERRUPT_GATE_TYPE ???
+#define INTERRUPT_GATE_TYPE 14
 
 /* Struct de descriptor de IDT */
 typedef struct str_idt_descriptor {

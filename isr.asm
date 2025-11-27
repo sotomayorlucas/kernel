@@ -6,36 +6,64 @@
 ; Definicion de rutinas de atencion de interrupciones
 
 %include "print.mac"
-%define CS_RING_0_SEL    (1 << 3)
 
 BITS 32
 
-;; PIC
+;; Constantes - Selectores de Segmento
+;; -------------------------------------------------------------------------- ;;
+%define CS_RING_0_SEL    (1 << 3)
+
+;; Constantes - Puertos de Hardware
+;; -------------------------------------------------------------------------- ;;
+%define KEYBOARD_DATA_PORT  0x60    ; Puerto de datos del teclado
+
+;; Constantes - Offsets del Stack tras PUSHAD
+;; -------------------------------------------------------------------------- ;;
+; El orden de PUSHAD es: EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI
+%define offset_EDI 0
+%define offset_ESI 4
+%define offset_EBP 8
+%define offset_ESP 12
+%define offset_EBX 16
+%define offset_EDX 20
+%define offset_ECX 24
+%define offset_EAX 28
+
+;; Constantes - Offsets del Stack para Frame de Excepcion
+;; -------------------------------------------------------------------------- ;;
+%define GREGS_SIZE      (8*4)       ; 8 registros de 4 bytes
+%define SREGS_SIZE      (6*4)       ; 6 registros de segmento
+%define CREGS_SIZE      (4*4)       ; 4 registros de control
+%define CLEANUP_SIZE    (CREGS_SIZE + SREGS_SIZE)
+
+;; Declaraciones Externas
+;; -------------------------------------------------------------------------- ;;
 extern pic_finish1
 extern kernel_exception
-
 extern process_scancode
 
-;; Definición de MACROS
+;; Definicion de Macros para ISRs
 ;; -------------------------------------------------------------------------- ;;
 
+; Macro principal que maneja el contexto de una excepcion
 %macro ISRc 1
     push DWORD %1
-    ; Stack State:
+    ; Estado del Stack despues del push:
     ; [ INTERRUPT #] esp
     ; [ ERROR CODE ] esp + 0x04
     ; [ EIP        ] esp + 0x08
     ; [ CS         ] esp + 0x0c
     ; [ EFLAGS     ] esp + 0x10
-    ; [ ESP        ] esp + 0x14 (if DPL(cs) == 3)
-    ; [ SS         ] esp + 0x18 (if DPL(cs) == 3)
+    ; [ ESP        ] esp + 0x14 (si DPL(cs) == 3)
+    ; [ SS         ] esp + 0x18 (si DPL(cs) == 3)
 
-    ; GREGS
+    ; Guardar registros generales
     pushad
-    ; Check for privilege change before anything else.
-    mov edx, [esp + (8*4 + 3*4)]
 
-    ; SREGS
+    ; Verificar si hubo cambio de privilegio
+    mov edx, [esp + (GREGS_SIZE + 3*4)]
+
+    ; Guardar registros de segmento
     xor eax, eax
     mov ax, ss
     push eax
@@ -49,7 +77,7 @@ extern process_scancode
     push eax
     push eax ; cs
 
-    ; CREGS
+    ; Guardar registros de control
     mov eax, cr4
     push eax
     mov eax, cr3
@@ -62,21 +90,20 @@ extern process_scancode
     cmp edx, CS_RING_0_SEL
     je .ring0_exception
 
+    ; Excepcion en Ring 3 (no implementado)
     ;call ring3_exception
     jmp $
 
-
 .ring0_exception:
     call kernel_exception
-    add esp, 10*4
+    add esp, CLEANUP_SIZE
     popad
 
-    xchg bx, bx
+    xchg bx, bx  ; Magic breakpoint para debugger
     jmp $
-
 %endmacro
 
-; ISR that pushes an exception code.
+; Macro para ISR con codigo de error (Error)
 %macro ISRE 1
 global _isr%1
 
@@ -84,7 +111,7 @@ _isr%1:
   ISRc %1
 %endmacro
 
-; ISR That doesn't push an exception code.
+; Macro para ISR sin codigo de error (No Error)
 %macro ISRNE 1
 global _isr%1
 
@@ -93,57 +120,58 @@ _isr%1:
   ISRc %1
 %endmacro
 
-;; Rutina de atención de las EXCEPCIONES
+;; Rutinas de Atencion de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-ISRNE 0
-ISRNE 1
-ISRNE 2
-ISRNE 3
-ISRNE 4
-ISRNE 5
-ISRNE 6
-ISRNE 7
-ISRE 8
-ISRNE 9
-ISRE 10
-ISRE 11
-ISRE 12
-ISRE 13
-ISRE 14
-ISRNE 15
-ISRNE 16
-ISRE 17
-ISRNE 18
-ISRNE 19
-ISRNE 20
+; Excepciones del CPU (0-20)
 
-;; Rutina de atención del RELOJ
+ISRNE 0   ; Division por cero
+ISRNE 1   ; Debug
+ISRNE 2   ; NMI Interrupt
+ISRNE 3   ; Breakpoint
+ISRNE 4   ; Overflow
+ISRNE 5   ; BOUND Range Exceeded
+ISRNE 6   ; Invalid Opcode
+ISRNE 7   ; Device Not Available
+ISRE  8   ; Double Fault
+ISRNE 9   ; Coprocessor Segment Overrun
+ISRE  10  ; Invalid TSS
+ISRE  11  ; Segment Not Present
+ISRE  12  ; Stack Fault
+ISRE  13  ; General Protection
+ISRE  14  ; Page-Fault
+ISRNE 15  ; Reserved
+ISRNE 16  ; x87 FPU Floating-Point Error
+ISRE  17  ; Alignment Check
+ISRNE 18  ; Machine-Check
+ISRNE 19  ; SIMD Floating-Point
+ISRNE 20  ; Virtualization
+
+;; Rutina de Atencion del RELOJ (IRQ 0)
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
-; usamos iret ya que este mismo guarda el estado de los flags antes de la interrupcion
-; mientras que ret no lo hace
+
 _isr32:
-    
-    pushad 
+    pushad
 
     call next_clock
 
     call pic_finish1
 
     popad
-    
     iret
 
-;; Rutina de atención del TECLADO
+;; Rutina de Atencion del TECLADO (IRQ 1)
 ;; -------------------------------------------------------------------------- ;;
 global _isr33
 
 _isr33:
     pushad
 
-    mov dx, 0x60
-    in eax,dx
-    
+    ; Leer scancode del puerto de datos del teclado
+    mov dx, KEYBOARD_DATA_PORT
+    in eax, dx
+
+    ; Pasar scancode como parametro a la funcion C
     push eax
     call process_scancode
 
@@ -153,51 +181,43 @@ _isr33:
     popad
     iret
 
-
-;; Rutinas de atención de las SYSCALLS
+;; Rutinas de Atencion de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 
 global _isr88
 _isr88:
-
     mov eax, 0x58
-    
     iret
 
 global _isr98
 _isr98:
-
     mov eax, 0x62
-
     iret
 
-; PushAD Order
-%define offset_EAX 28
-%define offset_ECX 24
-%define offset_EDX 20
-%define offset_EBX 16
-%define offset_ESP 12
-%define offset_EBP 8
-%define offset_ESI 4
-%define offset_EDI 0
-
-
-;; Funciones Auxiliares
+;; Funciones Auxiliares - Reloj
 ;; -------------------------------------------------------------------------- ;;
-isrNumber:           dd 0x00000000
-isrClock:            db '|/-\'
+
+; Constantes para animacion del reloj
+%define CLOCK_CHARS_COUNT  4
+%define CLOCK_ROW          49
+%define CLOCK_COL          79
+%define CLOCK_COLOR        0x0f
+
+section .data
+    isrNumber:  dd 0x00000000
+    isrClock:   db '|/-\'
+
+section .text
 next_clock:
-        pushad
-        inc DWORD [isrNumber]
-        mov ebx, [isrNumber]
-        cmp ebx, 0x4
-        jl .ok
-                mov DWORD [isrNumber], 0x0
-                mov ebx, 0
-        .ok:
-                add ebx, isrClock
-                print_text_pm ebx, 1, 0x0f, 49, 79
-                popad
-        ret
-printWord: 
-    
+    pushad
+    inc DWORD [isrNumber]
+    mov ebx, [isrNumber]
+    cmp ebx, CLOCK_CHARS_COUNT
+    jl .ok
+        mov DWORD [isrNumber], 0x0
+        mov ebx, 0
+    .ok:
+        add ebx, isrClock
+        print_text_pm ebx, 1, CLOCK_COLOR, CLOCK_ROW, CLOCK_COL
+        popad
+    ret

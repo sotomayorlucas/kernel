@@ -1,10 +1,15 @@
 
-
 #include "screen.h"
 
+/* Obtiene puntero al buffer de video */
+static inline ca(*get_video_buffer(void))[VIDEO_COLS] {
+  return (ca(*)[VIDEO_COLS])VIDEO;
+}
+
 void print(const char* text, uint32_t x, uint32_t y, uint16_t attr) {
-  ca(*p)[VIDEO_COLS] = (ca(*)[VIDEO_COLS])VIDEO; 
+  ca(*p)[VIDEO_COLS] = get_video_buffer();
   int32_t i;
+
   for (i = 0; text[i] != 0; i++) {
     p[y][x].c = (uint8_t)text[i];
     p[y][x].a = (uint8_t)attr;
@@ -16,9 +21,8 @@ void print(const char* text, uint32_t x, uint32_t y, uint16_t attr) {
   }
 }
 
-void print_dec(uint32_t numero, uint32_t size, uint32_t x, uint32_t y,
-               uint16_t attr) {
-  ca(*p)[VIDEO_COLS] = (ca(*)[VIDEO_COLS])VIDEO; 
+void print_dec(uint32_t numero, uint32_t size, uint32_t x, uint32_t y, uint16_t attr) {
+  ca(*p)[VIDEO_COLS] = get_video_buffer();
   uint32_t i;
   uint8_t letras[16] = "0123456789";
 
@@ -30,12 +34,13 @@ void print_dec(uint32_t numero, uint32_t size, uint32_t x, uint32_t y,
   }
 }
 
-void print_hex(uint32_t numero, int32_t size, uint32_t x, uint32_t y,
-               uint16_t attr) {
-  ca(*p)[VIDEO_COLS] = (ca(*)[VIDEO_COLS])VIDEO; 
+void print_hex(uint32_t numero, int32_t size, uint32_t x, uint32_t y, uint16_t attr) {
+  ca(*p)[VIDEO_COLS] = get_video_buffer();
   int32_t i;
   uint8_t hexa[8];
   uint8_t letras[16] = "0123456789ABCDEF";
+
+  /* Extraer cada nibble (4 bits) del numero */
   hexa[0] = letras[(numero & 0x0000000F) >> 0];
   hexa[1] = letras[(numero & 0x000000F0) >> 4];
   hexa[2] = letras[(numero & 0x00000F00) >> 8];
@@ -44,6 +49,7 @@ void print_hex(uint32_t numero, int32_t size, uint32_t x, uint32_t y,
   hexa[5] = letras[(numero & 0x00F00000) >> 20];
   hexa[6] = letras[(numero & 0x0F000000) >> 24];
   hexa[7] = letras[(numero & 0xF0000000) >> 28];
+
   for (i = 0; i < size; i++) {
     p[y][x + size - i - 1].c = hexa[i];
     p[y][x + size - i - 1].a = attr;
@@ -52,9 +58,10 @@ void print_hex(uint32_t numero, int32_t size, uint32_t x, uint32_t y,
 
 void screen_draw_box(uint32_t fInit, uint32_t cInit, uint32_t fSize,
                      uint32_t cSize, uint8_t character, uint8_t attr) {
-  ca(*p)[VIDEO_COLS] = (ca(*)[VIDEO_COLS])VIDEO; //Define un puntero de estructura ca de 80 posiciones. 
+  ca(*p)[VIDEO_COLS] = get_video_buffer();
   uint32_t f;
   uint32_t c;
+
   for (f = fInit; f < fInit + fSize; f++) {
     for (c = cInit; c < cInit + cSize; c++) {
       p[f][c].c = character;
@@ -62,19 +69,8 @@ void screen_draw_box(uint32_t fInit, uint32_t cInit, uint32_t fSize,
     }
   }
 }
-//Tengo una matriz con la estructura ca en cada posicion. En los ciclos lo que hace asignar "character" al atributo c de la estructura de cada f,c  
-//de la matriz, y lo mismo hace con attr al a.
-void screen_draw_layout(void) { 
-  screen_draw_box(0,0,50,80,0,0); //borramos todo
-  //int rojo = 0x41;
-  /*int celeste = C_BG_CYAN;
-  int blanco = 0xF0;
-  int espacio = 32;
-  screen_draw_box(1,0,16,80,espacio,celeste);
-  screen_draw_box(17,0,16,80,espacio,blanco);
-  screen_draw_box(33,0,16,80,espacio,celeste);
-  //screen_draw_box(25,0,1,80,,0xF0);
-  print("La Scaloneta en Qatar 2022 ",30,10,0x30);*/
+
+void screen_draw_layout(void) {
+  /* Borra toda la pantalla */
+  screen_draw_box(0, 0, 50, 80, 0, 0);
 }
-
-
